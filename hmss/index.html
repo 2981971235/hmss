@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理咨询机构信息采集表 - 经颅磁刺激仪</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --primary: #3a6ea5;
+            --secondary: #6a9bd8;
+            --accent: #ff6b6b;
+            --light: #f0f7ff;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --competitor: #9b59b6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e6f2ff 0%, #d1e5ff 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        header {
+            background: linear-gradient(120deg, var(--primary), var(--dark));
+            color: white;
+            padding: 35px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".15" fill="%23ffffff"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".25" fill="%23ffffff"/></svg>');
+            background-size: 1200px 100px;
+        }
+        
+        header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        header p {
+            font-size: 1.15rem;
+            opacity: 0.92;
+            max-width: 700px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .logo {
+            background: white;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: -50px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo i {
+            font-size: 3.5rem;
+            color: var(--primary);
+        }
+        
+        .survey-content {
+            padding: 70px 40px 40px;
+        }
+        
+        .survey-section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px dashed #dde7f0;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title i {
+            font-size: 1.8rem;
+            width: 40px;
+            height: 40px;
+            background: #e6f0ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.05rem;
+        }
+        
+        input[type="text"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #dde7f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f9fbff;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(106, 155, 216, 0.2);
+            outline: none;
+            background: white;
+        }
+        
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+        
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 8px;
+        }
+        
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            background: #f0f7ff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #dde7f0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .radio-option:hover, .checkbox-option:hover {
+            background: #e1edff;
+            border-color: var(--secondary);
+        }
+        
+        .radio-option input, .checkbox-option input {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .device-card {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e1edff 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #dde7f0;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+        
+        .device-card h3 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .device-card h3 i {
+            color: var(--accent);
+        }
+        
+        .price-range {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin: 20px 0;
+        }
+        
+        .price-range p {
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .price-range .options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .competitor-section {
+            background: linear-gradient(135deg, #f9f0ff 0%, #f1e1ff 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e8d7ff;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border-left: 4px solid var(--competitor);
+        }
+        
+        .competitor-section h3 {
+            color: var(--competitor);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 16px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-download {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(58, 110, 165, 0.4);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(120deg, var(--success), #2ecc71);
+            color: white;
+            padding: 18px 50px;
+            font-size: 1.15rem;
+            margin: 30px auto 20px;
+            display: block;
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.5);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+        
+        .icon {
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .survey-content {
+                padding: 60px 25px 30px;
+            }
+            
+            header {
+                padding: 25px 20px;
+            }
+            
+            .price-range .options {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--accent);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+        
+        .thank-you {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+        
+        .thank-you i {
+            font-size: 5rem;
+            color: var(--success);
+            margin-bottom: 25px;
+        }
+        
+        .thank-you h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .thank-you p {
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .tms-highlight {
+            color: var(--primary);
+            font-weight: 700;
+            background: #e6f0ff;
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+        
+        .footer-note {
+            text-align: center;
+            padding: 20px;
+            color: #6c7a89;
+            font-size: 0.95rem;
+            border-top: 1px solid #eef5ff;
+        }
+        
+        .download-notice {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 0.95rem;
+            color: #004974;
+        }
+        
+        .download-notice i {
+            color: #1890ff;
+            margin-right: 8px;
+        }
+        
+        .competitor-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f5ff;
+            border-radius: 8px;
+        }
+        
+        .competitor-info p {
+            margin-bottom: 10px;
+            font-style: italic;
+            color: #7d6a9e;
+        }
+        
+        .competitor-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+        
+        .competitor-table th, .competitor-table td {
+            border: 1px solid #e8d7ff;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .competitor-table th {
+            background-color: #f0e6ff;
+            color: var(--competitor);
+            font-weight: 600;
+        }
+        
+        .competitor-table tr:nth-child(even) {
+            background-color: #faf7ff;
+        }
+        
+        .info-icon {
+            color: var(--competitor);
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-wave"></div>
+            <div class="header-content">
+                <h1>心理咨询机构信息采集表</h1>
+                <p>用于收集心理咨询机构基础信息及经颅磁刺激仪设备需求</p>
+            </div>
+        </header>
+        
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+            </div>
+        </div>
+        
+        <div class="survey-content" id="surveyForm">
+            <form id="institutionSurvey">
+                <!-- 机构信息部分 -->
+                <div class="survey-section">
+                    <h2 class="section-title"><i class="fas fa-hospital"></i> 机构基本信息</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="region" class="required">所在地区</label>
+                            <input type="text" id="region" name="region" required placeholder="例如：北京市海淀区">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="institution" class="required">机构名称</label>
+                            <input type="text" id="institution" name="institution" required placeholder="请输入完整的机构名称">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contact" class="required">联系方式</label>
+                            <input type="tel" id="contact" name="contact" required placeholder="电话或手机号码">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address" class="required">详细地址</label>
+                            <input type="text" id="address" name="address" required placeholder="机构详细地址">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="institutionType" class="required">机构类型</label>
+                            <select id="institutionType" name="institutionType" required>
+                                <option value="">请选择机构类型</option>
+                                <option value="private">私立心理咨询中心</option>
+                                <option value="hospital">医院心理科室</option>
+                                <option value="university">高校心理咨询中心</option>
+                                <option value="community">社区心理服务站</option>
+                                <option value="other">其他类型</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="staffCount" class="required">心理咨询师人数</label>
+                            <input type="number" id="staffCount" name="staffCount" required min="1" placeholder="请输入心理咨询师人数">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 运营情况部分 -->
+                <div class="survey-section">
+                    <h2 class="section-title"><i class="fas fa-chart-line"></i> 机构运营情况</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="patientCount" class="required">月均咨询人数</label>
+                            <input type="number" id="patientCount" name="patientCount" required min="0" placeholder="每月心理咨询人数">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="averageSpend" class="required">平均咨询费用</label>
+                            <input type="number" id="averageSpend" name="averageSpend" required min="0" step="10" placeholder="单次咨询平均费用（元）">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">主要咨询人群（可多选）</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="patientType" value="children"> 儿童/青少年
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="patientType" value="adults"> 成年人
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="patientType" value="seniors"> 老年人
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="patientType" value="special"> 特殊心理问题人群
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="commonIssues" class="required">常见咨询问题</label>
+                        <textarea id="commonIssues" name="commonIssues" required placeholder="请描述机构常见的心理咨询问题（如抑郁症、焦虑症、失眠等）"></textarea>
+                    </div>
+                </div>
+                
+                <!-- 设备需求部分 -->
+                <div class="survey-section">
+                    <h2 class="section-title"><i class="fas fa-cogs"></i> 设备使用与需求</h2>
+                    
+                    <div class="device-card">
+                        <h3><i class="fas fa-magnet"></i> 经颅磁刺激仪（TMS）相关</h3>
+                        
+                        <div class="form-group">
+                            <label class="required">是否已使用经颅磁刺激设备？</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="tmsUsage" value="yes" required> 是，正在使用
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="tmsUsage" value="no"> 否，尚未使用
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="tmsUsage" value="plan"> 计划采购
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tmsBrand">设备品牌（如使用）</label>
+                                <input type="text" id="tmsBrand" name="tmsBrand" placeholder="现有设备品牌">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tmsFrequency">使用频率（如使用）</label>
+                                <select id="tmsFrequency" name="tmsFrequency">
+                                    <option value="">请选择使用频率</option>
+                                    <option value="daily">每日使用</option>
+                                    <option value="weekly">每周数次</option>
+                                    <option value="monthly">每月数次</option>
+                                    <option value="rarely">很少使用</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="price-range">
+                        <p>经颅磁刺激仪采购意向：</p>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="acquisition" value="rental" required> 租赁（月租 &lt; 499元）
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="acquisition" value="purchase"> 购买（价格 &gt; 3500元）
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="acquisition" value="both"> 租赁与购买结合
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tmsNeeds">设备需求与期望</label>
+                        <textarea id="tmsNeeds" name="tmsNeeds" placeholder="请描述您对经颅磁刺激仪的具体需求、功能要求或期望..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- 新增竞品调查部分 -->
+                <div class="survey-section">
+                    <h2 class="section-title"><i class="fas fa-chart-bar"></i> 竞品调查</h2>
+                    
+                    <div class="competitor-section">
+                        <h3><i class="fas fa-search-dollar"></i> 竞品使用情况调查</h3>
+                        
+                        <div class="competitor-info">
+                            <p><i class="fas fa-info-circle info-icon"></i> 请提供您了解的竞品设备信息，包括品牌、价格、优缺点等</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="competitorProducts">竞品设备信息</label>
+                            <textarea id="competitorProducts" name="competitorProducts" placeholder="请列出您了解的其他品牌的经颅磁刺激仪设备及其特点..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="competitorPricing">竞品价格信息</label>
+                            <textarea id="competitorPricing" name="competitorPricing" placeholder="请提供您了解的其他品牌设备的价格信息（包括购买价格、租赁费用等）..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="competitorFeedback">竞品优缺点分析</label>
+                            <textarea id="competitorFeedback" name="competitorFeedback" placeholder="请描述您了解的其他品牌设备的优缺点、市场反馈等..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="marketInsights">市场洞察与趋势</label>
+                            <textarea id="marketInsights" name="marketInsights" placeholder="请分享您对经颅磁刺激仪市场的看法、趋势预测等..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="download-notice">
+                    <i class="fas fa-info-circle"></i>
+                    提交表单后，系统将自动生成并下载包含您填写信息的Excel文件
+                </div>
+                
+                <button type="button" class="btn btn-submit" onclick="submitForm()">
+                    <i class="fas fa-paper-plane"></i> 提交信息采集表
+                </button>
+            </form>
+        </div>
+        
+        <div class="thank-you" id="thankYou">
+            <i class="fas fa-check-circle"></i>
+            <h2>感谢您提供宝贵信息！</h2>
+            <p>您提供的信息已成功保存到本地Excel文件：<span class="tms-highlight" id="fileName">机构信息采集表.xlsx</span></p>
+            <p>我们的专业团队将评估您的需求，并在3个工作日内与您联系。</p>
+            <div class="download-buttons">
+                <button class="btn btn-download" onclick="downloadExcel()">
+                    <i class="fas fa-redo"></i> 重新下载Excel文件
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            <p>© 2023 经颅磁刺激仪专业经销商 | 为心理咨询机构提供专业设备解决方案</p>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量存储表单数据
+        let formData = {};
+        
+        // 收集表单数据
+        function collectFormData() {
+            const form = document.getElementById('institutionSurvey');
+            const formElements = form.elements;
+            
+            // 重置表单数据
+            formData = {};
+            
+            // 收集单选按钮值
+            formData.tmsUsage = document.querySelector('input[name="tmsUsage"]:checked')?.value || '';
+            formData.acquisition = document.querySelector('input[name="acquisition"]:checked')?.value || '';
+            
+            // 收集多选按钮值
+            const patientTypes = Array.from(document.querySelectorAll('input[name="patientType"]:checked'))
+                .map(el => el.value);
+            formData.patientType = patientTypes.join(', ');
+            
+            // 收集其他表单元素
+            formData.region = form.region.value;
+            formData.institution = form.institution.value;
+            formData.contact = form.contact.value;
+            formData.address = form.address.value;
+            formData.institutionType = form.institutionType.value;
+            formData.staffCount = form.staffCount.value;
+            formData.patientCount = form.patientCount.value;
+            formData.averageSpend = form.averageSpend.value;
+            formData.commonIssues = form.commonIssues.value;
+            formData.tmsBrand = form.tmsBrand.value;
+            formData.tmsFrequency = form.tmsFrequency.value;
+            formData.tmsNeeds = form.tmsNeeds.value;
+            
+            // 收集竞品调查数据
+            formData.competitorProducts = form.competitorProducts.value;
+            formData.competitorPricing = form.competitorPricing.value;
+            formData.competitorFeedback = form.competitorFeedback.value;
+            formData.marketInsights = form.marketInsights.value;
+            
+            // 添加时间戳
+            formData.timestamp = new Date().toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // 生成Excel文件并下载
+        function generateExcel() {
+            // 创建工作簿
+            const wb = XLSX.utils.book_new();
+            
+            // 创建工作表数据 - 机构信息
+            const wsData1 = [
+                ['心理咨询机构信息采集表', '', '', ''],
+                ['提交时间', formData.timestamp, '', ''],
+                ['', '', '', ''],
+                ['字段', '值', '', ''],
+                ['机构名称', formData.institution],
+                ['所在地区', formData.region],
+                ['联系方式', formData.contact],
+                ['详细地址', formData.address],
+                ['机构类型', formData.institutionType],
+                ['心理咨询师人数', formData.staffCount],
+                ['月均咨询人数', formData.patientCount],
+                ['平均咨询费用', formData.averageSpend + ' 元'],
+                ['主要咨询人群', formData.patientType],
+                ['常见咨询问题', formData.commonIssues],
+                ['是否使用TMS设备', formData.tmsUsage],
+                ['设备品牌（如使用）', formData.tmsBrand],
+                ['使用频率（如使用）', formData.tmsFrequency],
+                ['采购意向', formData.acquisition],
+                ['设备需求与期望', formData.tmsNeeds]
+            ];
+            
+            const ws1 = XLSX.utils.aoa_to_sheet(wsData1);
+            
+            // 创建工作表数据 - 竞品调查
+            const wsData2 = [
+                ['竞品调查信息', '', '', ''],
+                ['提交时间', formData.timestamp, '', ''],
+                ['', '', '', ''],
+                ['竞品设备信息', formData.competitorProducts],
+                ['', '', '', ''],
+                ['竞品价格信息', formData.competitorPricing],
+                ['', '', '', ''],
+                ['竞品优缺点分析', formData.competitorFeedback],
+                ['', '', '', ''],
+                ['市场洞察与趋势', formData.marketInsights]
+            ];
+            
+            const ws2 = XLSX.utils.aoa_to_sheet(wsData2);
+            
+            // 设置列宽
+            const colWidths = [
+                {wch: 20},
+                {wch: 40},
+                {wch: 20},
+                {wch: 40}
+            ];
+            
+            ws1['!cols'] = colWidths;
+            ws2['!cols'] = colWidths;
+            
+            // 添加工作表到工作簿
+            XLSX.utils.book_append_sheet(wb, ws1, "机构信息");
+            XLSX.utils.book_append_sheet(wb, ws2, "竞品调查");
+            
+            // 生成Excel文件并下载
+            const fileName = `机构信息采集表_${formData.institution || '未命名'}_${new Date().getTime()}.xlsx`;
+            document.getElementById('fileName').textContent = fileName;
+            XLSX.writeFile(wb, fileName);
+        }
+        
+        // 提交表单
+        function submitForm() {
+            const form = document.getElementById('institutionSurvey');
+            if (form.checkValidity()) {
+                collectFormData();
+                generateExcel();
+                
+                document.getElementById('surveyForm').style.display = 'none';
+                document.getElementById('thankYou').style.display = 'block';
+            } else {
+                alert('请填写所有必填字段（标有*的字段）');
+                form.reportValidity();
+            }
+        }
+        
+        // 重新下载Excel文件
+        function downloadExcel() {
+            if (Object.keys(formData).length === 0) {
+                alert('请先提交表单以生成数据');
+                return;
+            }
+            generateExcel();
+        }
+    </script>
+</body>
+</html>
